@@ -1,0 +1,1 @@
+This repository is for the web page "Course Notes Template v2", for more information please visit the page at "https://muchensun.github.io/CourseNotesv2/".
