@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Modern Robotics Course Notes | Notes of &lt;Modern Robotics&gt; Online Course</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Modern Robotics Course Notes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Notes of &lt;Modern Robotics&gt; Online Course" />
+<meta property="og:description" content="Notes of &lt;Modern Robotics&gt; Online Course" />
+<link rel="canonical" href="http://localhost:4000/ch4.html" />
+<meta property="og:url" content="http://localhost:4000/ch4.html" />
+<meta property="og:site_name" content="Modern Robotics Course Notes" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/ch4.html","headline":"Modern Robotics Course Notes","description":"Notes of &lt;Modern Robotics&gt; Online Course","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=153fd49a44e477b9e23b2e3758fbec5bd5e8b9dd">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="http://localhost:4000/">Modern Robotics Course Notes</a></h1>
+      
+
+      <p style="text-align:center;">
+<button type="button" onclick="window.location.href='index.html';">Homepage</button>
+<span style="float:left;"><button type="button" onclick="window.location.href='ch3.html';">Previous</button></span>
+<span style="float:right;"><button type="button" onclick="window.location.href='ch5.html';">Next</button></span>
+</p>
+
+<h1 id="chapter-4-forward-kinematics">Chapter 4: Forward Kinematics</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><em><strong>Forward kinematics</strong> of a robot refers to the calculation of the position and orientation of its end-effector frame from its joint coordinates $\theta$.</em></p>
+
+<p>This chapter focuses on open chain structures. There two widly used representations for the forward kinematics of general open chains: <strong>Denavit-Hartenberg(D-H) parameters</strong> and <strong>product of exponentials(PoE) formula</strong>. The latter one is our preferred choice of forward kinematics representation and the topic of this chapter.</p>
+
+<hr />
+
+<h2 id="product-of-exponentialspoe-formula">Product of Exponentials(PoE) Formula</h2>
+
+<p>The general idea of PoE formula is using screw motion(matrix exponential) to describe the displacement at each joint of the robot.</p>
+
+<p>The general step of using PoE formula for forward kinematics can be concluded as:</p>
+<ol>
+  <li>Find the zero/home position configuration $M \in SE(3)$ of the robot, where all joints are set to zero and the robot is at initial position.;</li>
+  <li>Calculate the set of screw-axes of all the joints <script type="math/tex">\mathcal{S}= \{ \mathcal{S}_1, \mathcal{S}_2, \cdots , \mathcal{S}_n \}</script>;</li>
+  <li>Get the set of all joint variables $\theta$;</li>
+  <li>Use PoE formula to calculate the final configuration $T(\theta) \in SE(3)$.</li>
+</ol>
+
+<p>Usually, there is a base frame <script type="math/tex">\{s\}</script> and a body frame <script type="math/tex">\{b\}</script>, which is assigned with the end-effector. Representing screw-axes in different frames results two forms of PoE formula: <strong>space form</strong> and <strong>body form</strong>.</p>
+
+<h3 id="space-form-of-poe-formula">Space Form of PoE Formula</h3>
+
+<p>In the space-form of PoE formula, $M$ and screw-axes are represented in the fixed/space/base frame. Here recall that, when calculating screw-axes, the robot must be at zero/home position.
+After finishing the first three steps mentioned above, the space form of PoE formula can be written as:</p>
+
+<script type="math/tex; mode=display">T(\theta) = e^{[\mathcal{S}_1]\theta_1} \cdots e^{[\mathcal{S}_{n-1}]\theta_{n-1}} \underbrace{e^{[\mathcal{S}_n]\theta_n} M}_{\text{start from the distal}}</script>
+
+<p>Here, <em>$M$ is first transformed by the most distal joint, progressively moving inward to more proximal joints. Note that the fixed space-frame representation of the scrwe axis for a more proximal joint is not affected by the joint displacement at a distal joint.</em></p>
+
+<h3 id="body-form-of-poe-formula">Body Form of PoE Formula</h3>
+
+<p>In the body-form of PoE formula, $M$ is still represented in the space frame. However, all the screw-axes are represented in the body frame. In this case, the PoE formula is written as:</p>
+
+<script type="math/tex; mode=display">T(\theta) = \underbrace{M e^{[\mathcal{B}_1]\theta_1}}_{\text{start from the proximal}} \cdots e^{[\mathcal{B}_{n-1}]\theta_{n-1}} e^{[\mathcal{B}_n]\theta_n}</script>
+
+<p>Here, <em>$M$ is first transformed by the first joint, progressively moving outward to more distal joints. The body-frame representation of the screw axis for a more distal joint is not affected by the joint displacement at a proximal joint.</em></p>
+
+<p>The order of transformations plays an important role here, wrong orders can lead to wrong configurations(you can try it). But once the PoE formula is represented correctly, the order of operations on the joints has no effect on the end-effector’s final configuration.</p>
+
+<hr />
+
+<h2 id="python-solution-for-coursera-quiz">Python Solution for Coursera Quiz</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">import</span> <span class="nn">modern_robotics</span> <span class="k">as</span> <span class="n">mr</span> 
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+
+<span class="c1"># question 1
+</span><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">3.73</span><span class="p">],</span>
+              <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span> <span class="mf">2.73</span><span class="p">],</span>
+              <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">]])</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 1:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="c1"># question 2
+</span><span class="n">Slist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>   <span class="o">-</span><span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">2.73</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">0.73</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">3.73</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="o">-</span><span class="mf">3.73</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 2:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">Slist</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="c1"># question 3
+</span><span class="n">Blist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">2.73</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">2.73</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">2.73</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> <span class="mf">3.73</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>   <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">2</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">],</span>
+                  <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 3:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">Blist</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="c1"># question 4
+</span><span class="n">thetalist_space</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">])</span>
+<span class="n">MatSpace</span> <span class="o">=</span> <span class="n">mr</span><span class="o">.</span><span class="n">FKinSpace</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">Slist</span><span class="p">,</span> <span class="n">thetalist_space</span><span class="p">)</span> 
+<span class="n">MatSpaceOff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">MatSpace</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 4:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">MatSpaceOff</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="c1"># question 5
+</span><span class="n">thetalist_body</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">])</span>
+<span class="n">MatBody</span> <span class="o">=</span> <span class="n">mr</span><span class="o">.</span><span class="n">FKinBody</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">Blist</span><span class="p">,</span> <span class="n">thetalist_body</span><span class="p">)</span>
+<span class="n">MatBodyOff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">MatBody</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 5:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">MatBodyOff</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</code></pre></div></div>
+
+	  
+	  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+
+<script
+  type="text/javascript"
+  charset="utf-8"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+>
+</script>
+<!-- <script
+  type="text/javascript"
+  charset="utf-8"
+  src="https://vincenttam.github.io/javascripts/MathJaxLocal.js"
+> -->
+</script>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/pages-themes/primer/edit/master/ch4.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  </body>
+</html>

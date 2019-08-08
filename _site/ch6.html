@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Modern Robotics Course Notes | Notes of &lt;Modern Robotics&gt; Online Course</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Modern Robotics Course Notes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Notes of &lt;Modern Robotics&gt; Online Course" />
+<meta property="og:description" content="Notes of &lt;Modern Robotics&gt; Online Course" />
+<link rel="canonical" href="http://localhost:4000/ch6.html" />
+<meta property="og:url" content="http://localhost:4000/ch6.html" />
+<meta property="og:site_name" content="Modern Robotics Course Notes" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/ch6.html","headline":"Modern Robotics Course Notes","description":"Notes of &lt;Modern Robotics&gt; Online Course","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=153fd49a44e477b9e23b2e3758fbec5bd5e8b9dd">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="http://localhost:4000/">Modern Robotics Course Notes</a></h1>
+      
+
+      <p style="text-align:center;">
+<button type="button" onclick="window.location.href='index.html';">Homepage</button>
+<span style="float:left;"><button type="button" onclick="window.location.href='ch5.html';">Previous</button></span>
+<span style="float:right;"><button type="button" onclick="window.location.href='ch8.html';">Next</button></span>
+</p>
+
+<h1 id="chapter-6-inverse-kinematics">Chapter 6: Inverse Kinematics</h1>
+
+<h2 id="analytic-inverse-kinematics-and-numerical-inverse-kinematics">Analytic Inverse Kinematics and Numerical Inverse Kinematics</h2>
+
+<p>These are two common solutions for inverse kinematics problem. Analytic solution depends on the structure of the robot. They can be easily obtained from some popluar robot structures like PUMA and Stanford robot arms (both are discussed in the book). However, for a more general purpose, numerical method is a better idea. Here, the numerical method is adapted from Newton-Raphson method.</p>
+
+<hr />
+
+<h2 id="newton-raphson-iterative-algorithm">Newton-Raphson Iterative Algorithm</h2>
+
+<blockquote>
+  <p>… <strong>Newton’s method</strong>, also known as <strong>Newton-Raphson method</strong>, …, is a root-finding algorithm which produces successively better approximations to the roots (or zeros) of a real-valued function. <sup>[1]</sup></p>
+</blockquote>
+
+<p>For an iteration method, as well as recursion, I think the key issue is to find out the relation between two iterations. In the case of Newton-Raphson method, this relation is obtained by applying Taylor expansion to the target function and truncate it at first order.</p>
+
+<hr />
+
+<h2 id="numerical-inverse-kinematics-problem">Numerical Inverse Kinematics Problem</h2>
+
+<h3 id="the-case-of-minimal-set-of-coordinates">The Case of Minimal Set of Coordinates</h3>
+
+<p>If we set the forward kinematics $f(\theta)$ as target funtion, in the inverse kinematics problem, instead of finding its root, we want to find the $\theta_d$ that makes $f(\theta_d) = x_d$, which is not a root-finding problem. To apply Newton-Raphson method, we design a new function $g(\theta) = x_d - f(\theta)$ to make it a root-finding problem.</p>
+
+<p>Similarly, we can get the relation between two iterations by applying Taylor expansion. Then, we can get the equation which I think is the most important one to understand numerical inverse kinematics problem:</p>
+
+<script type="math/tex; mode=display">J(\theta^k)\Delta\theta = x_d - f(\theta^k)</script>
+
+<p>where $\Delta\theta = \theta^{k+1} - \theta^k$ and $J(\theta)$ is the Jacobian matrix of $f(\theta)$.</p>
+
+<p>To get $\Delta\theta$, we need to consider the dimension of $J$. If $J$ is invertible, just pre-multiply $J^{-1}$ to both sides. Otherwise, we need to use the <strong>pseudoinverse</strong> of $J$, denoted as $J^{\dagger}$. The idea behind $J^{\dagger}$ is we want to minimize $\Delta\theta$.</p>
+
+<h3 id="the-case-of-se3">The Case of $SE(3)$</h3>
+
+<p>For now we have:</p>
+
+<script type="math/tex; mode=display">\Delta\theta = J^{\dagger} (x_d - f(\theta^k))</script>
+
+<p>where $e = x_d - f(\theta^k)$ can be considered as <em>a velocity vector which, if followed for unit time, would cause a motion from $f(\theta^k)$ to $x_d$</em>. When representing end-effector configuration with a transformation matrix $T \in SE(3)$, we also need a velocity value that described the same motion, that’s why we calculate the matrix logarithm of $T_{bd}(\theta^i)$.</p>
+
+<hr />
+
+<p><em>(Since the rest two sections of this chpater in the book: “Inverse Velocity Kinematics” and “A Note on Closed Loops” are not mentioned in detail in the online course, I will skip these two section temporarily.)</em></p>
+
+<hr />
+
+<h2 id="connections-between-chapter-3-and-6">Connections Between Chapter 3 and 6</h2>
+
+<p>In this chapter, we use a twist $\mathcal{V}_b$ to describe a velocity which, <em>if followed for unit time</em>, would cause a motion from <script type="math/tex">T_{sb}</script> to <script type="math/tex">T_{sd}</script>. We obtain this twist by:</p>
+
+<script type="math/tex; mode=display">[\mathcal{V}_b] = log(T_{bd}(\theta^i))</script>
+
+<p>Similar idea has already mentioned in the textbook. At <em>section 3.2.3.3 “Matrix Logarithm of Rotations”</em> of the textbook, there is:</p>
+
+<blockquote>
+  <p>Just as the matrix exponential “integrates” the matrix representation of an angular velocity $[\hat{\omega}]\theta \in so(3)$ for one second to give an orientation $R \in SO(3)$, the matrix logarithm “differentiates” an $R \in SO(3)$ to find the matrix representation of a constant angular velocity $[\hat{\omega}]\theta \in so(3)$ which, if integrated for one second, rotates a frame from $I$ to $R$.</p>
+</blockquote>
+
+<p>This idea came from <em>section 3.2.3.2 “Exponential Coordinates of Rotations”</em> of the textbook, when the authors considered a rotation transformation along an axis $\hat{\omega}$ for $\theta$ radians as achieved by rotating in a constant speed of 1 rad/s for $\theta$ seconds (or in a constant speed of $\theta$ rad/s for one second).</p>
+
+<p>It is quite straightforward to employ this idea to the case of twist and homogeneous transformtion matrix. In <em>proposition 3.25</em> of the textbook, we can even determine that directly by seeing components of $e^{[\mathcal{S}]\theta}$.</p>
+
+<hr />
+
+<h2 id="python-solution-for-course-quiz">Python Solution for Course Quiz</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
+<span class="kn">import</span> <span class="nn">modern_robotics</span> <span class="k">as</span> <span class="n">mr</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">pi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+
+<span class="c1"># question 1
+</span><span class="k">def</span> <span class="nf">function_1</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">9</span><span class="p">,</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">jacobian_1</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
+
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1"># iteration counter
+</span><span class="n">theta</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># initial guess
+</span><span class="k">while</span><span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">LA</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">jacobian_1</span><span class="p">(</span><span class="n">theta</span><span class="p">)),</span> <span class="n">function_1</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 1:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">))</span>
+
+<span class="c1"># question 2
+</span><span class="n">Blist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                  <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.585</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.811</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.076</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mf">0.811</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.585</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2.608</span><span class="p">],</span>
+              <span class="p">[</span> <span class="mi">0</span>    <span class="p">,</span>  <span class="mi">0</span>    <span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.</span>   <span class="p">],</span>
+              <span class="p">[</span> <span class="mi">0</span>    <span class="p">,</span>  <span class="mf">0.</span>   <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span>   <span class="p">]])</span>
+<span class="n">thetalist0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">eomg</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">ev</span> <span class="o">=</span> <span class="mf">0.0001</span>
+
+<span class="p">(</span><span class="n">thetalistQ2</span><span class="p">,</span> <span class="n">successQ2</span><span class="p">)</span> <span class="o">=</span> <span class="n">mr</span><span class="o">.</span><span class="n">IKinBody</span><span class="p">(</span><span class="n">Blist</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">thetalist0</span><span class="p">,</span> <span class="n">eomg</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">successQ2</span><span class="p">):</span>
+    <span class="n">thetalistQ2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">thetalistQ2</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 2:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">thetalistQ2</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">','</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Question 2:</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="s">"Function </span><span class="se">\'</span><span class="s">IKinBody</span><span class="se">\'</span><span class="s"> failed to converge."</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<p>[1] <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton’s method (Wikipedia)</a></p>
+
+	  
+	  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+
+<script
+  type="text/javascript"
+  charset="utf-8"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+>
+</script>
+<!-- <script
+  type="text/javascript"
+  charset="utf-8"
+  src="https://vincenttam.github.io/javascripts/MathJaxLocal.js"
+> -->
+</script>
+
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/pages-themes/primer/edit/master/ch6.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  </body>
+</html>

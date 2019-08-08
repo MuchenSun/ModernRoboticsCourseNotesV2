@@ -17,5 +17,5 @@ github:
   repository_url: "https://github.com/pages-themes/primer"
 
 markdown: kramdown
-title: Course Notes Template v2
-description: 'Notes of \<Course Name\> Online Course'
+title: Modern Robotics Course Notes
+description: 'Notes of \<Modern Robotics\> Online Course'
