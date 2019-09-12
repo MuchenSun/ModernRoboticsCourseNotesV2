@@ -12,14 +12,12 @@ mathjax: true
 # Chapter 2: Configuration Space
 
 ## Some Terms
+
 **Joints**, **links**, and **end-effecto**r.
 
-***
-
 ## Some Definitions
-*"The **configuration** of a robot is a complete specification of the position of every point of the robot. The minimum number $$n$$ of real-valued coordinates needed to represent the configuration is the number of **degrees of freedom (dof)** of the robot. The $$n$$-dimensional space containing all possible configuration of the robot is called the **configuration space (C-space)**. The configuration space of a robot is represented by a point the C-space."*
 
-***
+*"The **configuration** of a robot is a complete specification of the position of every point of the robot. The minimum number $$n$$ of real-valued coordinates needed to represent the configuration is the number of **degrees of freedom (dof)** of the robot. The $$n$$-dimensional space containing all possible configuration of the robot is called the **configuration space (C-space)**. The configuration space of a robot is represented by a point the C-space."*
 
 ## Degrees of Freedom of a Rigid Body
 
@@ -39,15 +37,11 @@ $$
 
 in which $n$ degrees are *linear* and all the rest degrees are *angular*.
 
-***
-
 ## Constraints of Joints
 
 Joints will constrain the dof of a rigid body.
 
 **What are the constrains of several important joints(especially revolute, prismatic, and spherical) in both planar and spatial space?**
-
-***
 
 ## Grübler's Formula
 
@@ -85,8 +79,6 @@ $$
    * Removing all the **redundant joints**, this mechanism is same with an open-chain, 3R arm. 
 ![q1_7](https://raw.githubusercontent.com/MuchenSun/ModernRoboticsCourseNotes/master/_img/ch2_f2.jpg)
 
-***
-
 ## Configuration Space: Topology and Representation
 
 ### Configuration Space Topology
@@ -110,8 +102,6 @@ What's the difference between $T^2 = S^1 \times S^1$ and $S^2$?
 * Uses more parameters than the space's dof.
 * Has advantage in representing closed-chain mechanism
 
-***
-
 ## Configuration and Velocity Constraints
 
 A planar, closed-chain, four-bar linkage has a dof of one, but representing this dof can be hard by using **explicit representation**. With **loop-closure equations**, however, **implicit representation** is more useful in this case. 
@@ -128,8 +118,6 @@ A planar, closed-chain, four-bar linkage has a dof of one, but representing this
 * Pfaffian constraints that are nonintegrable. (Figure 2.11: A coin rolling on a plane without slipping)
 * Reduces the dimension of feasible velocities of the system, but do not reduce the reachable C-space. (The rolling coin can reach any place in its four-dimensional C-space despite the two constraints on its velocity)
 
-***
-
 ## Task Space and Work Space
 
 **Task Space**: The space in which the robot's task is naturally described.
@@ -137,8 +125,6 @@ A planar, closed-chain, four-bar linkage has a dof of one, but representing this
 **Work Space**: A specification of the reachable configurations of the end-effector.
 
 Both spaces are distinct from the robot's C-space.
-
-***
 
 ## My Questions
 

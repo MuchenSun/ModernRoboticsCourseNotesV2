@@ -118,8 +118,6 @@ As rotation is a dynamic process, we want to know the rate of change of the body
 
 Since we can use an unit vector and a constant(a rate of ratation) to represent angular velocity, we also want to use a unit vector and another constant(an angle) to represent rotation. To achieve this goal, we use **exponential coordinates representation of rotations**. Reserving the process, we have **matrix logarithm of a rotation**.
 
-***
-
 ## Rigid-Body Motions and Twists
 
 ### Homogeneous Transformation Matrices
@@ -299,8 +297,6 @@ We use **homogeneous transformation matrices** to describe rigid-body motions. B
 
 Twists can be interpreted in terms of a screw axis and a velocity. Based on this **screw interpretation** of a twist, we introduce the **exponential coordinates representation of a homogeneous transformation matrix**. Similar with the case of rotation matrix, we have **matrix exponential** and **matrix logarithm** of a transformation matrix.
 
-***
-
 ## Wrenches
 
 Given a reference frame $$\{a\}$$, a force $f_a \in \mathbb{R}^3$ creates a **torque / moment** $m_a \in \mathbb{R}^3$ after acting on a rigid body at point $r_a \in \mathbb{R}^3$:
@@ -316,8 +312,6 @@ Similar with the case of twist, the reference frame of a wrench can be switched 
 $$
 \mathcal{F}_b = Ad^T_{T_{ab}}(\mathcal{F}_a) = [Ad_{T_{ab}}]^T\mathcal{F}_a
 $$
-
-***
 
 ## Python Solution for Coursera Quiz
 
@@ -404,8 +398,6 @@ MatrixLog_T_q15 = mr.MatrixLog6(T_q15)
 MatrixLog_T_q15_off = np.around(MatrixLog_T_q15, decimals=2)
 print("\nQuestion 15:\n", np.array2string(MatrixLog_T_q15_off, separator=',', suppress_small=True)) # question 15
 ```
-
-***
 
 ## References
 

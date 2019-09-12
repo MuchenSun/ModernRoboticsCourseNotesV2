@@ -75,7 +75,7 @@ GEM
     mini_portile2 (2.4.0)
     minitest (5.11.3)
     multipart-post (2.1.1)
-    nokogiri (1.10.3)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     octokit (4.14.0)
       sawyer (~> 0.8.0, >= 0.5.3)
@@ -125,6 +125,7 @@ PLATFORMS
 DEPENDENCIES
   html-proofer (~> 3.0)
   jekyll-theme-primer!
+  nokogiri (>= 1.10.4)
   rubocop (~> 0.50)
   w3c_validators (~> 1.3)
 

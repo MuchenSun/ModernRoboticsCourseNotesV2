@@ -15,15 +15,11 @@ mathjax: true
 
 These are two common solutions for inverse kinematics problem. Analytic solution depends on the structure of the robot. They can be easily obtained from some popluar robot structures like PUMA and Stanford robot arms (both are discussed in the book). However, for a more general purpose, numerical method is a better idea. Here, the numerical method is adapted from Newton-Raphson method.
 
-***
-
 ## Newton-Raphson Iterative Algorithm
 
 > ... **Newton's method**, also known as **Newton-Raphson method**, ..., is a root-finding algorithm which produces successively better approximations to the roots (or zeros) of a real-valued function. <sup>[1]</sup>
 
 For an iteration method, as well as recursion, I think the key issue is to find out the relation between two iterations. In the case of Newton-Raphson method, this relation is obtained by applying Taylor expansion to the target function and truncate it at first order.
-
-***
 
 ## Numerical Inverse Kinematics Problem
 
@@ -51,11 +47,7 @@ $$
 
 where $e = x_d - f(\theta^k)$ can be considered as *a velocity vector which, if followed for unit time, would cause a motion from $f(\theta^k)$ to $x_d$*. When representing end-effector configuration with a transformation matrix $T \in SE(3)$, we also need a velocity value that described the same motion, that's why we calculate the matrix logarithm of $T_{bd}(\theta^i)$.
 
-***
-
 *(Since the rest two sections of this chpater in the book: "Inverse Velocity Kinematics" and "A Note on Closed Loops" are not mentioned in detail in the online course, I will skip these two section temporarily.)*
-
-***
 
 ## Connections Between Chapter 3 and 6
 
@@ -72,8 +64,6 @@ Similar idea has already mentioned in the textbook. At *section 3.2.3.3 "Matrix 
 This idea came from *section 3.2.3.2 "Exponential Coordinates of Rotations"* of the textbook, when the authors considered a rotation transformation along an axis $\hat{\omega}$ for $\theta$ radians as achieved by rotating in a constant speed of 1 rad/s for $\theta$ seconds (or in a constant speed of $\theta$ rad/s for one second).
 
 It is quite straightforward to employ this idea to the case of twist and homogeneous transformtion matrix. In *proposition 3.25* of the textbook, we can even determine that directly by seeing components of $e^{[\mathcal{S}]\theta}$.
-
-***
 
 ## Python Solution for Course Quiz
 
@@ -125,8 +115,6 @@ if(successQ2):
 else:
     print("\nQuestion 2:\n", "Function \'IKinBody\' failed to converge.")
 ~~~
-
-***
 
 ## References
 

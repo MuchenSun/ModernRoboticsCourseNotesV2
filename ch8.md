@@ -57,4 +57,8 @@ $$
 \tau = M(\theta)\ddot{\theta} + \underbrace{c(\theta, \dot{\theta}) + g(\theta)}_{h(\theta, \dot{\theta})}
 $$
 
-where $\theta \in \mathcal{R}^n$ is the configuration of the serial chain, $M(\theta) \in \mathcal{R}^{n\times n}$ is the symmetric, positive definite **mass matrix** that is only related to $\theta$, $c(\theta, \dot{\theta})$ is the velocity product term that is composed of terms with.
+where $\theta \in \mathbb{R}^n$ is the configuration of the serial chain, $M(\theta) \in \mathbb{R}^{n\times n}$ is the symmetric, positive definite **mass matrix** that is only related to $\theta$, $c(\theta, \dot{\theta})$ is the velocity product term that is composed of terms with $\theta_i^2$ or $\theta_i \theta_j$, and $g(\theta)$ is the gravity term, which is under the assumption that all the potential energy comes from gravity.
+
+### Understanding Velocity Product Terms
+
+

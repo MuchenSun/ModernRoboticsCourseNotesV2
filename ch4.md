@@ -17,8 +17,6 @@ mathjax: true
 
 This chapter focuses on open chain structures. There two widly used representations for the forward kinematics of general open chains: **Denavit-Hartenberg(D-H) parameters** and **product of exponentials(PoE) formula**. The latter one is our preferred choice of forward kinematics representation and the topic of this chapter.
 
-***
-
 ## Product of Exponentials(PoE) Formula
 
 The general idea of PoE formula is using screw motion(matrix exponential) to describe the displacement at each joint of the robot. 
@@ -51,8 +49,6 @@ $$
 Here, *$M$ is first transformed by the first joint, progressively moving outward to more distal joints. The body-frame representation of the screw axis for a more distal joint is not affected by the joint displacement at a proximal joint.*
 
 The order of transformations plays an important role here, wrong orders can lead to wrong configurations(you can try it). But once the PoE formula is represented correctly, the order of operations on the joints has no effect on the end-effector's final configuration.
-
-***
 
 ## Python Solution for Coursera Quiz
 
